@@ -129,7 +129,18 @@ async function researchGoogle(
     // Visit top results and extract content
     for (let i = 0; i < Math.min(3, searchResults.results.length); i++) {
       const result = searchResults.results[i];
-      if (!result.url || result.url.includes("duckduckgo.com")) continue;
+      if (!result.url) continue;
+
+      try {
+        const hostname = new URL(result.url).hostname;
+        // Skip DuckDuckGo domains (e.g., duckduckgo.com, www.duckduckgo.com)
+        if (hostname === "duckduckgo.com" || hostname.endsWith(".duckduckgo.com")) {
+          continue;
+        }
+      } catch {
+        // Skip invalid URLs that cannot be parsed
+        continue;
+      }
 
       onStatus(`Reading: ${result.title.slice(0, 30)}...`);
 
